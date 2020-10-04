@@ -6,15 +6,15 @@ import (
 	"os"
 
 	"github.com/Shopify/sarama"
-)
-
-const (
-	kafkaConn = "localhost:9092"
-	topic     = "go_carga"
+	"github.com/spf13/viper"
 )
 
 // InitProducer ...
 func InitProducer() (sarama.SyncProducer, error) {
+	var host = viper.GetString("kafka.host")
+	var port = viper.GetString("kafka.port")
+	var conn = host + ":" + port
+
 	// setup sarama log to stdout
 	sarama.Logger = log.New(os.Stdout, "", log.Ltime)
 
@@ -26,13 +26,16 @@ func InitProducer() (sarama.SyncProducer, error) {
 	config.Version = sarama.V0_11_0_0
 
 	// create producer
-	prd, err := sarama.NewSyncProducer([]string{kafkaConn}, config)
+	fmt.Println("host: ", host)
+	prd, err := sarama.NewSyncProducer([]string{conn}, config)
 
 	return prd, err
 }
 
 // Produce ee
 func Produce(message string, headers map[string]string, producer sarama.SyncProducer) {
+	var topic = viper.GetString("kafka.topic")
+
 	// publish sync
 	msg := &sarama.ProducerMessage{
 		Topic:   topic,
