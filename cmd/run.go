@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"kafka-carga/kafka"
+	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/spf13/cobra"
 )
@@ -36,21 +38,54 @@ func exec() {
 		os.Exit(1)
 	}
 
-	msg := buildMessage()
+	// build messages
+	messages := buildMessage()
 	headers := make(map[string]string, 0)
 	headers["header_1"] = "content_1"
 
-	//send message
-	fmt.Println("Enviando Mensagem(s) -------------")
-	kafka.Produce(msg, headers, kafkaProducer)
+	// send message
+	fmt.Printf("Sending %d Message(s) -------------\n", len(messages))
+	for _, msg := range messages {
+		kafka.Produce(msg, headers, kafkaProducer)
+	}
 }
 
-func buildMessage() string {
-	fileContent, err := ioutil.ReadFile(targetPath)
+func buildMessage() []string {
+	if isFile() {
+		content := readFileContent(targetPath)
+		return []string{string(content)}
+	}
+
+	allFiles := getAllFilesInDirectory()
+	filesContent := readAllFiles(allFiles)
+	return filesContent
+}
+
+func isFile() bool {
+	return filepath.Ext(targetPath) != ""
+}
+
+func getAllFilesInDirectory() []os.FileInfo {
+	files, err := ioutil.ReadDir(targetPath)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return files
+}
+
+func readAllFiles(files []os.FileInfo) []string {
+	var filesContent = make([]string, len(files))
+	for _, file := range files {
+		content := readFileContent(targetPath + "/" + file.Name())
+		filesContent = append(filesContent, string(content))
+	}
+	return filesContent
+}
+
+func readFileContent(fileName string) []byte {
+	content, err := ioutil.ReadFile(fileName)
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println("Enviando o texto: ", string(fileContent))
-
-	return string(fileContent)
+	return content
 }
