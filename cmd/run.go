@@ -18,8 +18,11 @@ var runCmd = &cobra.Command{
 	},
 }
 
+var repeat int
+
 func init() {
 	rootCmd.AddCommand(runCmd)
+	runCmd.Flags().IntVarP(&repeat, "repeat", "r", 1, "Quantidade de vezes que cada mensagem será enviada")
 }
 
 func exec() {
