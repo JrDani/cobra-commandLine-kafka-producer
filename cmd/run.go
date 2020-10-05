@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"io/ioutil"
 	"kafka-carga/kafka"
 	"os"
 
@@ -19,10 +20,12 @@ var runCmd = &cobra.Command{
 }
 
 var repeat int
+var targetPath string
 
 func init() {
 	rootCmd.AddCommand(runCmd)
-	runCmd.Flags().IntVarP(&repeat, "repeat", "r", 1, "Quantidade de vezes que cada mensagem será enviada")
+	runCmd.Flags().IntVarP(&repeat, "repeat", "r", 1, "Quantidade de vezes que cada mensagem será enviada.")
+	runCmd.Flags().StringVarP(&targetPath, "target", "t", "", "Caminho do arquivo ou do diretório a ser transformado em mensagem.")
 }
 
 func exec() {
@@ -33,12 +36,21 @@ func exec() {
 		os.Exit(1)
 	}
 
-	// build message
+	msg := buildMessage()
 	headers := make(map[string]string, 0)
 	headers["header_1"] = "content_1"
-	msg := "Mensagem produzida pelo Kafka Carga"
 
 	//send message
 	fmt.Println("Enviando Mensagem(s) -------------")
 	kafka.Produce(msg, headers, kafkaProducer)
+}
+
+func buildMessage() string {
+	fileContent, err := ioutil.ReadFile(targetPath)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println("Enviando o texto: ", string(fileContent))
+
+	return string(fileContent)
 }
