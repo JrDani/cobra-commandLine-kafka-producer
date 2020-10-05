@@ -14,8 +14,8 @@ import (
 // runCmd represents the run command
 var runCmd = &cobra.Command{
 	Use:   "run",
-	Short: "Fazer carga de mensagens no Kafka",
-	Long:  `po`,
+	Short: "load Kafka messages",
+	Long:  `load Kafka messages using files content`,
 	Run: func(cmd *cobra.Command, args []string) {
 		exec()
 	},
@@ -26,8 +26,8 @@ var targetPath string
 
 func init() {
 	rootCmd.AddCommand(runCmd)
-	runCmd.Flags().IntVarP(&repeat, "repeat", "r", 1, "Quantidade de vezes que cada mensagem será enviada.")
-	runCmd.Flags().StringVarP(&targetPath, "target", "t", "", "Caminho do arquivo ou do diretório a ser transformado em mensagem.")
+	runCmd.Flags().IntVarP(&repeat, "repeat", "r", 1, "Number of times that each message will be send")
+	runCmd.Flags().StringVarP(&targetPath, "target", "t", "", "The path of the file or directory")
 }
 
 func exec() {
