@@ -26,13 +26,12 @@ func InitProducer() (sarama.SyncProducer, error) {
 	config.Version = sarama.V0_11_0_0
 
 	// create producer
-	fmt.Println("host: ", host)
 	prd, err := sarama.NewSyncProducer([]string{conn}, config)
 
 	return prd, err
 }
 
-// Produce ee
+// Produce ...
 func Produce(message string, headers map[string]string, producer sarama.SyncProducer) {
 	var topic = viper.GetString("kafka.topic")
 
@@ -49,6 +48,7 @@ func Produce(message string, headers map[string]string, producer sarama.SyncProd
 
 	fmt.Println("Partition: ", p)
 	fmt.Println("Offset: ", o)
+	fmt.Println("Done!")
 }
 
 func convertHeaders(headers map[string]string) []sarama.RecordHeader {
