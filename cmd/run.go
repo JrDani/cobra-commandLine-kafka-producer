@@ -44,9 +44,11 @@ func exec() {
 	headers["header_1"] = "content_1"
 
 	// send message
-	fmt.Printf("Sending %d Message(s) -------------\n", len(messages))
+	fmt.Printf("Sending %d Message(s) -------------\n", len(messages)*repeat)
 	for _, msg := range messages {
-		kafka.Produce(msg, headers, kafkaProducer)
+		for i := 0; i < repeat; i++ {
+			kafka.Produce(msg, headers, kafkaProducer)
+		}
 	}
 }
 
@@ -74,7 +76,7 @@ func getAllFilesInDirectory() []os.FileInfo {
 }
 
 func readAllFiles(files []os.FileInfo) []string {
-	var filesContent = make([]string, len(files))
+	var filesContent []string
 	for _, file := range files {
 		content := readFileContent(targetPath + "/" + file.Name())
 		filesContent = append(filesContent, string(content))
