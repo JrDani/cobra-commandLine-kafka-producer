@@ -2,3 +2,4 @@ kafka:
   host: "localhost"
   port: 9092
   topic: "go_carga"
+  clientID: "cobra"
